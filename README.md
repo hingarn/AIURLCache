@@ -20,9 +20,7 @@ Drag ```AIURLCache``` into your project.
 * In the ```(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions``` method 
 instantiate ```AIURLCache``` class
 ```html
-AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:[capacityInBytes] 
-											            diskCapacity: [capacityInBytes] 
-											                diskPath:@"[directoryName]"];
+AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:[capacityInBytes] diskCapacity: [capacityInBytes] diskPath:@"[directoryName]"];
 ```
 * Set URL and MIME type to cache
 For example, if you would like to cache all ```.png``` files in ```http://www.mydomain.com/images```. 
