@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    javascript,
+    js,
     css,
     png,
     jpeg,
@@ -17,5 +17,6 @@ typedef enum {
 } MIMETypes;
 
 @interface AIURLCache : NSURLCache
-- (void) cacheResourcesForURL: (NSString *) urlString withMIMEType: (MIMETypes) mimeType; 
+- (void) cacheResourcesForURL: (NSString *) urlString withMIMEType: (MIMETypes) mimeType;
+- (void) setMaxCacheAge: (NSUInteger) age;
 @end

@@ -8,22 +8,23 @@
 #import "RemoteFilesCacheStorage.h"
 #import <CommonCrypto/CommonDigest.h>
 
-static NSInteger cacheMaxCacheAge = 60*60*24*14; // 2 weeks
+static NSInteger cacheMaxCacheAge = 60*60*24*7; // 1 week
 static NSString *filePath = @"Caches";
 static RemoteFilesCacheStorage *_singleton;
 
 @interface RemoteFilesCacheStorage()
 @property (nonatomic, strong) NSString *diskCachePath;
-@property (nonatomic, strong) NSMutableArray *downloadedFiles;
+@property (nonatomic, strong) NSMutableArray *currentlyDownloadedFiles;
 @property (nonatomic, strong) NSOperationQueue *operationsQueue;
-@property (nonatomic, strong) NSOperationQueue *downloadQueue; 
+@property (nonatomic, strong) NSOperationQueue *downloadQueue;
 @end
 
 @implementation RemoteFilesCacheStorage
 @synthesize diskCachePath = _diskCachePath;
-@synthesize downloadedFiles = _downloadedFiles;
+@synthesize currentlyDownloadedFiles = _currentlyDownloadedFiles;
 @synthesize operationsQueue = _operationsQueue;
-@synthesize downloadQueue = _downloadQueue; 
+@synthesize downloadQueue = _downloadQueue;
+@synthesize cacheAge = _cacheAge; 
 
 + (RemoteFilesCacheStorage *) sharedStorage
 {
@@ -39,11 +40,16 @@ static RemoteFilesCacheStorage *_singleton;
 {
     if ((self = [super init]))
     {
-        self.downloadedFiles = [[NSMutableArray alloc] init];
+        if (self.cacheAge) {
+            cacheMaxCacheAge = self.cacheAge; 
+        }
+        
+        self.currentlyDownloadedFiles = [[NSMutableArray alloc] init];
         
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         self.diskCachePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:filePath];
         
+        //create directory
         if (![[NSFileManager defaultManager] fileExistsAtPath:self.diskCachePath])
         {
             [[NSFileManager defaultManager] createDirectoryAtPath:self.diskCachePath
@@ -55,6 +61,7 @@ static RemoteFilesCacheStorage *_singleton;
         self.operationsQueue = [[NSOperationQueue alloc] init];
         self.downloadQueue = [[NSOperationQueue alloc] init];
         
+        //subscribe to events to ensure that we perform clean up when files expire, and also stop downloads when low on memory
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(clearMemory)
                                                      name:UIApplicationDidReceiveMemoryWarningNotification
@@ -84,34 +91,44 @@ static RemoteFilesCacheStorage *_singleton;
 
 - (void)saveFileForKeyWrapper:(NSString *)key
 {
-    if (self.operationsQueue.operationCount < 100) {
-        NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self
-                                                                                selector:@selector(saveFileForKey:)
-                                                                                  object:key];
-        [self.operationsQueue addOperation:operation];
-    }
+    //ensures that self.downloadedFiles array is not accessed while being enumirated
+    NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self
+                                                                            selector:@selector(saveFileForKey:)
+                                                                              object:key];
+    [self.operationsQueue addOperation:operation];
 }
 
 - (void)saveFileForKey:(NSString *) key
 {
-    NSString *cachePathKey = [self cachePathForKey:key];
-    
-    if (self.downloadQueue.operationCount < 100 && ![self.downloadedFiles containsObject:cachePathKey]) {
-        [self.downloadedFiles addObject:cachePathKey];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSString *cachePathKey = [self cachePathForKey:key];
+        
+        if (![self.currentlyDownloadedFiles containsObject:cachePathKey]) {
+            [self.currentlyDownloadedFiles addObject:cachePathKey];
+            
             NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:key]];
             [NSURLConnection sendAsynchronousRequest:request queue:self.downloadQueue completionHandler:^(NSURLResponse *response,
-                                                                                                    NSData *data,
-                                                                                                    NSError *error){
+                                                                                                          NSData *data,
+                                                                                                          NSError *error){
                 if (data != nil) {
                     [[NSFileManager defaultManager] createFileAtPath: cachePathKey contents:data attributes:nil];
-                    [self.downloadedFiles removeObject:cachePathKey];
-                } 
-            }];  
-        });
-    }
+                    NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self
+                                                                                            selector:@selector(removeKeyFromDownloadsArray:)
+                                                                                              object:cachePathKey];
+                    [self.operationsQueue addOperation:operation];
+                }
+            }];
+        }
+    });
 }
 
+- (void) removeKeyFromDownloadsArray: (NSString *) key
+{
+    //makes sure array deletion happens on a same thread the addition happened, otherwise we risk to modify array while enumiration
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [self.currentlyDownloadedFiles removeObject:key];
+    });
+}
 - (NSData *)fileForKey:(NSString *) key
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self cachePathForKey:key]]) {
@@ -119,7 +136,6 @@ static RemoteFilesCacheStorage *_singleton;
     } else {
         return nil;
     }
-    
 }
 
 - (void)removeFileForKey:(NSString *)key
@@ -131,11 +147,12 @@ static RemoteFilesCacheStorage *_singleton;
 {
     [self.operationsQueue cancelAllOperations];
     [self.downloadQueue cancelAllOperations];
+    [self.currentlyDownloadedFiles removeAllObjects];
 }
 
 - (void)clearDisk
 {
-    [self clearMemory]; 
+    [self clearMemory];
     
     NSString *endPath = self.diskCachePath;
     
@@ -149,6 +166,7 @@ static RemoteFilesCacheStorage *_singleton;
 
 - (void) cleanDiskWithDirectoryEnumirator:(NSDirectoryEnumerator *) enumirator atPath:(NSString *) directory
 {
+    //delete files that expired
     NSDate *expirationDate = [NSDate dateWithTimeIntervalSinceNow:-cacheMaxCacheAge];
     for (NSString *fileName in enumirator)
     {
@@ -183,6 +201,10 @@ static RemoteFilesCacheStorage *_singleton;
 
 - (void) dealloc
 {
+    self.diskCachePath = nil;
+    self.currentlyDownloadedFiles = nil;
+    self.operationsQueue = nil;
+    self.downloadQueue = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end

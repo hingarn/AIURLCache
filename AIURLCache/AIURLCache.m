@@ -17,6 +17,11 @@
 @synthesize mimeTypes = _mimeTypes;
 @synthesize cacheURLAndMIMETypes = _cacheURLAndMIMETypes;
 
+- (void) setMaxCacheAge: (NSUInteger) age
+{
+    [RemoteFilesCacheStorage sharedStorage].cacheAge = age; 
+}
+
 - (NSDictionary *) mimeTypes
 {
     if (!_mimeTypes) {
@@ -25,7 +30,6 @@
                                @"text/css", @"css",
                                @"image/png", @"png",
                                @"image/jpeg", @"jpeg",
-                               @"text/html", @"html",
                                nil];
         _mimeTypes = types; 
     }
@@ -44,6 +48,7 @@
 
 - (void) cacheResourcesForURL: (NSString *) urlString withMIMEType: (MIMETypes) mimeType
 {
+    //adds url along with mime type into array for later use
     NSNumber *mimeTypeNumber = [NSNumber numberWithInt:mimeType];
     NSDictionary *cachePath = [[NSDictionary alloc] initWithObjectsAndKeys:urlString, @"path", mimeTypeNumber, @"MIMEType", nil];
     NSMutableArray *tempPaths = [[NSMutableArray alloc] initWithArray:self.cacheURLAndMIMETypes];
@@ -53,10 +58,11 @@
 
 - (BOOL) doesMIMETypeMatchRequestedType: (NSNumber *) type inURLString: (NSString *) pathString
 {
+    //only cache requested mime type for specified url
     MIMETypes mime = [type intValue];
     
     switch (mime) {
-        case javascript:
+        case js:
             return ([[self.mimeTypes valueForKey:@"js"] isEqualToString:[self mimeTypeForPath:pathString]]);
             break;
         case css:
@@ -80,12 +86,13 @@
     return NO;
 }
 
-- (BOOL) shouldSubstituteRemoteFileForLocal: (NSString *) pathString
+- (BOOL) shouldCacheRemoteFileForURL: (NSString *) urlString
 {
+    //main check for both url and mime type specified by user
     BOOL should = NO;
     for (NSDictionary *urlAndMIMEType in self.cacheURLAndMIMETypes) {
-        if ([pathString rangeOfString:[urlAndMIMEType valueForKey:@"path"]].location != NSNotFound) {
-           should = [self doesMIMETypeMatchRequestedType: (NSNumber *)[urlAndMIMEType valueForKey:@"MIMEType"] inURLString:pathString];
+        if ([urlString rangeOfString:[urlAndMIMEType valueForKey:@"path"]].location != NSNotFound) {
+           should = [self doesMIMETypeMatchRequestedType: (NSNumber *)[urlAndMIMEType valueForKey:@"MIMEType"] inURLString:urlString];
         }
     }
     
@@ -111,27 +118,32 @@
 {
 	NSString *pathString = [[request URL] absoluteString];
     
-	if (![self shouldSubstituteRemoteFileForLocal:pathString])
+	if (![self shouldCacheRemoteFileForURL:pathString])
 	{
         NSLog(@"not caching: %@", pathString);
+        //default webview caching
 		return [super cachedResponseForRequest:request];
 	}
-    
+
     NSData *data = [[RemoteFilesCacheStorage sharedStorage] fileForKey:pathString];
     
 	if (data)
 	{
+        NSLog(@"retrieving %@", pathString);
+        
         NSURLResponse *response =
 		[[NSURLResponse alloc]
          initWithURL:[request URL]
          MIMEType:[self mimeTypeForPath:pathString]
          expectedContentLength:[data length]
          textEncodingName:nil];
+        
+        //delete cached response from default cache to free up memory since we already stored it on disk 
         [self removeCachedResponseForRequest:request];
-        NSLog(@"retrieving %@", pathString);
 		return [[NSCachedURLResponse alloc] initWithResponse:response data:data];
 	} else {
         NSLog(@"caching: %@", pathString);
+        //save file on disk
         [[RemoteFilesCacheStorage sharedStorage] saveFileForKeyWrapper:pathString];
         return [super cachedResponseForRequest:request];
     }
@@ -139,14 +151,10 @@
 
 - (void)removeCachedResponseForRequest:(NSURLRequest *)request
 {
+    //put deletion on background thread, otherwise use will experience choppy scrolling 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [super removeCachedResponseForRequest:request];
     });
-}
-
-- (void)dealloc
-{
-    
 }
 
 @end

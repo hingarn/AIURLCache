@@ -14,9 +14,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:1024 * 1024 *4 diskCapacity: 10 * 1024 * 1024 diskPath:@"urlCache"];
-    [sharedCache cacheResourcesForURL:@"http://oyster.ignimgs.com/" withMIMEType:allImages];
-    [sharedCache setMemoryCapacity:0];
+    AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:1024*1024*4 diskCapacity: 10*1024*1024 diskPath:@"urlCache"];
+    [sharedCache setMaxCacheAge:60*60*24*14];
+    [sharedCache cacheResourcesForURL:@"http://oyster.ignimgs.com/ignmedia/wikimaps" withMIMEType:allImages];
     [NSURLCache setSharedURLCache:sharedCache];
     return YES;
 }

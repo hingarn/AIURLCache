@@ -18,7 +18,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSURL *url = [NSURL URLWithString:@"http://m.ign.com"];
+    NSURL *url = [NSURL URLWithString:@"http://widgets.ign.com/global/wikis/wikimap.html?full=true&garbage_collect=true&map_id=Skyrim&controls=false&popup=iphone&display_title=true&device=iphone"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [self.webview loadRequest:request]; 
 }

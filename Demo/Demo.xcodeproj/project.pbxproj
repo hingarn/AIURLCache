@@ -57,7 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				8A6F24DD15CB89C50097E65D /* AIURLCache */,
-				8A6F24BE15CB893A0097E65D /* Demo */,
+				8A6F24BE15CB893A0097E65D /* App */,
 				8A6F24B715CB893A0097E65D /* Frameworks */,
 				8A6F24B515CB893A0097E65D /* Products */,
 			);
@@ -81,7 +81,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8A6F24BE15CB893A0097E65D /* Demo */ = {
+		8A6F24BE15CB893A0097E65D /* App */ = {
 			isa = PBXGroup;
 			children = (
 				8A6F24C715CB893A0097E65D /* AppDelegate.h */,
@@ -91,6 +91,7 @@
 				8A6F24CE15CB893A0097E65D /* ViewController.m */,
 				8A6F24BF15CB893A0097E65D /* Supporting Files */,
 			);
+			name = App;
 			path = Demo;
 			sourceTree = "<group>";
 		};

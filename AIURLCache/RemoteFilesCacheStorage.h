@@ -10,6 +10,7 @@
 @interface RemoteFilesCacheStorage : NSObject
 + (RemoteFilesCacheStorage *) sharedStorage;
 
+@property (nonatomic) NSInteger cacheAge; 
 - (NSData *)fileForKey:(NSString *) key;
 - (void)saveFileForKeyWrapper:(NSString *)key;
 - (void)clearMemory;
