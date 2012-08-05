@@ -17,19 +17,25 @@ Drag ```AIURLCache``` into your project.
 (see sample Xcode project in ```/Demo```)
 
 * Import ```AIURLCache.h"``` file in your ```AppDelegate.h``` file.
+
 * In the ```(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions``` method 
 instantiate ```AIURLCache``` class
+
 ```html
 AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:[capacityInBytes] diskCapacity: [capacityInBytes] diskPath:@"[directoryName]"];
 ```
+
 * Set URL and MIME type to cache
+
 For example, if you would like to cache all ```.png``` files in ```http://www.mydomain.com/images```. 
+
 ```html
 [sharedCache cacheResourcesForURL:@"http://www.mydomain.com/images" withMIMEType:png];
 ```
 
 ```AIURLCache``` provides enum for MIME types: 
 ```
+
 png = image/png
 jpeg,jpg = image/jpeg
 css = text/css
@@ -39,11 +45,14 @@ all
 ```
 
 * (Optionally) Set cache maximum age limit. Default is 1 week
+
 This will set the cache to expire in two weeks. 
 ```html
     [sharedCache setMaxCacheAge:60*60*24*14];
 ```
+
 * Set your app's cache to use ```AIURLCache```
+
 ```html
 [NSURLCache setSharedURLCache:sharedCache];
 ```
