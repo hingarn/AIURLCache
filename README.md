@@ -10,7 +10,7 @@ and next time you make the request it will return cached version from a disk. Yo
 
 ## Installation
 
-Drag ```AIURLCache``` into your project. 
+Drag ```AIURLCache``` folder into your project. 
 
 ## Usage
 

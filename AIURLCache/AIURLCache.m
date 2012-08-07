@@ -6,7 +6,7 @@
 //
 
 #import "AIURLCache.h"
-#import "RemoteFilesCacheStorage.h"
+#import "AIRemoteFilesCacheStorage.h"
 
 @interface AIURLCache()
 @property (nonatomic, strong) NSArray *cacheURLAndMIMETypes;
@@ -19,7 +19,7 @@
 
 - (void) setMaxCacheAge: (NSUInteger) age
 {
-    [RemoteFilesCacheStorage sharedStorage].cacheAge = age; 
+    [AIRemoteFilesCacheStorage sharedStorage].cacheAge = age;
 }
 
 - (NSDictionary *) mimeTypes
@@ -31,7 +31,7 @@
                                @"image/png", @"png",
                                @"image/jpeg", @"jpeg",
                                nil];
-        _mimeTypes = types; 
+        _mimeTypes = types;
     }
     
     return _mimeTypes;
@@ -40,10 +40,10 @@
 - (NSArray *) cacheURLAndMIMETypes
 {
     if (!_cacheURLAndMIMETypes) {
-        _cacheURLAndMIMETypes = [[NSArray alloc] init]; 
+        _cacheURLAndMIMETypes = [[NSArray alloc] init];
     }
     
-    return _cacheURLAndMIMETypes; 
+    return _cacheURLAndMIMETypes;
 }
 
 - (void) cacheResourcesForURL: (NSString *) urlString withMIMEType: (MIMETypes) mimeType
@@ -92,7 +92,7 @@
     BOOL should = NO;
     for (NSDictionary *urlAndMIMEType in self.cacheURLAndMIMETypes) {
         if ([urlString rangeOfString:[urlAndMIMEType valueForKey:@"path"]].location != NSNotFound) {
-           should = [self doesMIMETypeMatchRequestedType: (NSNumber *)[urlAndMIMEType valueForKey:@"MIMEType"] inURLString:urlString];
+            should = [self doesMIMETypeMatchRequestedType: (NSNumber *)[urlAndMIMEType valueForKey:@"MIMEType"] inURLString:urlString];
         }
     }
     
@@ -120,16 +120,16 @@
     
 	if (![self shouldCacheRemoteFileForURL:pathString])
 	{
-        NSLog(@"not caching: %@", pathString);
+        //        NSLog(@"default caching: %@", pathString);
         //default webview caching
 		return [super cachedResponseForRequest:request];
 	}
-
-    NSData *data = [[RemoteFilesCacheStorage sharedStorage] fileForKey:pathString];
+    
+    NSData *data = [[AIRemoteFilesCacheStorage sharedStorage] fileForKey:pathString];
     
 	if (data)
 	{
-        NSLog(@"retrieving %@", pathString);
+        //        NSLog(@"retrieving %@", pathString);
         
         NSURLResponse *response =
 		[[NSURLResponse alloc]
@@ -138,20 +138,20 @@
          expectedContentLength:[data length]
          textEncodingName:nil];
         
-        //delete cached response from default cache to free up memory since we already stored it on disk 
+        //delete cached response from default cache to free up memory since we already stored it on disk
         [self removeCachedResponseForRequest:request];
 		return [[NSCachedURLResponse alloc] initWithResponse:response data:data];
 	} else {
-        NSLog(@"caching: %@", pathString);
+        //        NSLog(@"caching: %@", pathString);
         //save file on disk
-        [[RemoteFilesCacheStorage sharedStorage] saveFileForKeyWrapper:pathString];
+        [[AIRemoteFilesCacheStorage sharedStorage] saveFileForKeyWrapper:pathString];
         return [super cachedResponseForRequest:request];
     }
 }
 
 - (void)removeCachedResponseForRequest:(NSURLRequest *)request
 {
-    //put deletion on background thread, otherwise use will experience choppy scrolling 
+    //put deletion on background thread, otherwise user will experience choppy scrolling
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [super removeCachedResponseForRequest:request];
     });
