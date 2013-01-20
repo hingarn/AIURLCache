@@ -27,28 +27,21 @@ AIURLCache *sharedCache = [[AIURLCache alloc] initWithMemoryCapacity:[capacityIn
 
 * Set URL and MIME type to cache
 
-For example, if you would like to cache all ```.png``` files in ```http://www.mydomain.com/images```. 
+For example, if you would like to cache all ```.png``` files in ```http://www.mydomain.com/images``` for one week. 
 
 ```html
-[sharedCache cacheResourcesForURL:@"http://www.mydomain.com/images" withMIMEType:png];
+[sharedCache cacheResourcesForURL:@"http://www.mydomain.com/images" withMIMEType:png timeOutInterval:60*60*24*7];
 ```
 
 ```AIURLCache``` provides enum for MIME types: 
 ```
-
 png = image/png
 jpeg,jpg = image/jpeg
 css = text/css
 js = application/javascript
+html = text/html
 allImages = image/jpeg or image/png 
 all
-```
-
-* (Optionally) Set cache maximum age limit. Default is 1 week
-
-This will set the cache to expire in two weeks. 
-```html
-    [sharedCache setMaxCacheAge:60*60*24*14];
 ```
 
 * Set your app's cache to use ```AIURLCache```
@@ -56,6 +49,10 @@ This will set the cache to expire in two weeks.
 ```html
 [NSURLCache setSharedURLCache:sharedCache];
 ```
+
+## Dependencies
+
+EGOCache https://github.com/enormego/EGOCache.
 
 ## ARC Support
 

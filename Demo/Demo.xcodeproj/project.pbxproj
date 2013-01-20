@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A45A73116AB5ED300A7650B /* EGOCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A45A72F16AB5ED300A7650B /* EGOCache.m */; };
+		8A45A73216AB5ED300A7650B /* README.mdown in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A73016AB5ED300A7650B /* README.mdown */; };
+		8A45A73416AB616600A7650B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A73316AB616600A7650B /* README.md */; };
 		8A6F24B915CB893A0097E65D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6F24B815CB893A0097E65D /* UIKit.framework */; };
 		8A6F24BB15CB893A0097E65D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6F24BA15CB893A0097E65D /* Foundation.framework */; };
 		8A6F24BD15CB893A0097E65D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6F24BC15CB893A0097E65D /* CoreGraphics.framework */; };
@@ -16,10 +19,13 @@
 		8A6F24CC15CB893A0097E65D /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8A6F24CA15CB893A0097E65D /* MainStoryboard.storyboard */; };
 		8A6F24CF15CB893A0097E65D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A6F24CE15CB893A0097E65D /* ViewController.m */; };
 		8A6F24E215CB89C50097E65D /* AIURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A6F24DF15CB89C50097E65D /* AIURLCache.m */; };
-		8A6F24E315CB89C50097E65D /* AIRemoteFilesCacheStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A6F24E115CB89C50097E65D /* AIRemoteFilesCacheStorage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8A45A72E16AB5ED300A7650B /* EGOCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGOCache.h; sourceTree = "<group>"; };
+		8A45A72F16AB5ED300A7650B /* EGOCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EGOCache.m; sourceTree = "<group>"; };
+		8A45A73016AB5ED300A7650B /* README.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mdown; sourceTree = "<group>"; };
+		8A45A73316AB616600A7650B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		8A6F24B415CB893A0097E65D /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A6F24B815CB893A0097E65D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8A6F24BA15CB893A0097E65D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -35,8 +41,6 @@
 		8A6F24CE15CB893A0097E65D /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		8A6F24DE15CB89C50097E65D /* AIURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIURLCache.h; sourceTree = "<group>"; };
 		8A6F24DF15CB89C50097E65D /* AIURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIURLCache.m; sourceTree = "<group>"; };
-		8A6F24E015CB89C50097E65D /* AIRemoteFilesCacheStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRemoteFilesCacheStorage.h; sourceTree = "<group>"; };
-		8A6F24E115CB89C50097E65D /* AIRemoteFilesCacheStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRemoteFilesCacheStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +57,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8A45A72D16AB5ED300A7650B /* EGOCache */ = {
+			isa = PBXGroup;
+			children = (
+				8A45A72E16AB5ED300A7650B /* EGOCache.h */,
+				8A45A72F16AB5ED300A7650B /* EGOCache.m */,
+				8A45A73016AB5ED300A7650B /* README.mdown */,
+			);
+			path = EGOCache;
+			sourceTree = "<group>";
+		};
 		8A6F24A915CB893A0097E65D = {
 			isa = PBXGroup;
 			children = (
@@ -84,6 +98,7 @@
 		8A6F24BE15CB893A0097E65D /* App */ = {
 			isa = PBXGroup;
 			children = (
+				8A45A72D16AB5ED300A7650B /* EGOCache */,
 				8A6F24C715CB893A0097E65D /* AppDelegate.h */,
 				8A6F24C815CB893A0097E65D /* AppDelegate.m */,
 				8A6F24CA15CB893A0097E65D /* MainStoryboard.storyboard */,
@@ -109,10 +124,9 @@
 		8A6F24DD15CB89C50097E65D /* AIURLCache */ = {
 			isa = PBXGroup;
 			children = (
+				8A45A73316AB616600A7650B /* README.md */,
 				8A6F24DE15CB89C50097E65D /* AIURLCache.h */,
 				8A6F24DF15CB89C50097E65D /* AIURLCache.m */,
-				8A6F24E015CB89C50097E65D /* AIRemoteFilesCacheStorage.h */,
-				8A6F24E115CB89C50097E65D /* AIRemoteFilesCacheStorage.m */,
 			);
 			name = AIURLCache;
 			path = ../AIURLCache;
@@ -171,6 +185,8 @@
 			files = (
 				8A6F24C315CB893A0097E65D /* InfoPlist.strings in Resources */,
 				8A6F24CC15CB893A0097E65D /* MainStoryboard.storyboard in Resources */,
+				8A45A73216AB5ED300A7650B /* README.mdown in Resources */,
+				8A45A73416AB616600A7650B /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,7 +201,7 @@
 				8A6F24C915CB893A0097E65D /* AppDelegate.m in Sources */,
 				8A6F24CF15CB893A0097E65D /* ViewController.m in Sources */,
 				8A6F24E215CB89C50097E65D /* AIURLCache.m in Sources */,
-				8A6F24E315CB89C50097E65D /* AIRemoteFilesCacheStorage.m in Sources */,
+				8A45A73116AB5ED300A7650B /* EGOCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
