@@ -39,7 +39,7 @@
 
 - (void)cacheResourcesForURL:(NSString *)urlString withMIMEType:(MIMETypes)mimeType timeOutInterval:(NSTimeInterval)timeout
 {
-    //adds url along, mime type, and timeout into array for later use
+    //adds url along with mime type, and timeout into array for later use
     [self.cacheURLAndMIMETypes addObject:@{@"path":urlString, @"MIMEType":[NSNumber numberWithInt:mimeType]}];
     [self.timeoutsForMIMEType setObject:[NSNumber numberWithDouble:timeout] forKey:[self mimeNumberForPath:[NSNumber numberWithInt:mimeType]]];
 }
@@ -161,8 +161,7 @@
     
     NSData *data = [[EGOCache globalCache] dataForKey:[self hashString:pathString]];
     
-	if (data)
-	{
+	if (data) {
         NSURLResponse *response =
 		[[NSURLResponse alloc]
          initWithURL:[request URL]
@@ -193,7 +192,7 @@
 
 - (void)removeCachedResponseForRequest:(NSURLRequest *)request
 {
-    //put deletion on background thread
+    //put deletion on a background thread
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [super removeCachedResponseForRequest:request];
     });
